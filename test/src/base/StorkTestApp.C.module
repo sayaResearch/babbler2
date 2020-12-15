@@ -1,0 +1,61 @@
+//* This file is part of the MOOSE framework
+//* https://www.mooseframework.org
+//*
+//* All rights reserved, see COPYRIGHT for full restrictions
+//* https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//*
+//* Licensed under LGPL 2.1, please see LICENSE for details
+//* https://www.gnu.org/licenses/lgpl-2.1.html
+#include "babbler2TestApp.h"
+#include "babbler2App.h"
+#include "Moose.h"
+#include "AppFactory.h"
+#include "MooseSyntax.h"
+
+InputParameters
+babbler2TestApp::validParams()
+{
+  InputParameters params = babbler2App::validParams();
+  return params;
+}
+
+babbler2TestApp::babbler2TestApp(InputParameters parameters) : MooseApp(parameters)
+{
+  babbler2TestApp::registerAll(
+      _factory, _action_factory, _syntax, getParam<bool>("allow_test_objects"));
+}
+
+babbler2TestApp::~babbler2TestApp() {}
+
+void
+babbler2TestApp::registerAll(Factory & f, ActionFactory & af, Syntax & s, bool use_test_objs)
+{
+  babbler2App::registerAll(f, af, s);
+  if (use_test_objs)
+  {
+    Registry::registerObjectsTo(f, {"babbler2TestApp"});
+    Registry::registerActionsTo(af, {"babbler2TestApp"});
+  }
+}
+
+void
+babbler2TestApp::registerApps()
+{
+  registerApp(babbler2App);
+  registerApp(babbler2TestApp);
+}
+
+/***************************************************************************************************
+ *********************** Dynamic Library Entry Points - DO NOT MODIFY ******************************
+ **************************************************************************************************/
+// External entry point for dynamic application loading
+extern "C" void
+babbler2TestApp__registerAll(Factory & f, ActionFactory & af, Syntax & s)
+{
+  babbler2TestApp::registerAll(f, af, s);
+}
+extern "C" void
+babbler2TestApp__registerApps()
+{
+  babbler2TestApp::registerApps();
+}
